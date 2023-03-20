@@ -85,6 +85,6 @@ class InviteAutoAddAwTeam:
             and self._api.is_mine(event.state_key)
         ):
             # add to appwrite team
-            logger.info(
+            logger.debug(
                 "NEW EVENT FROM MODULE %r", event.id
             )
