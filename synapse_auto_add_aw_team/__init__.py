@@ -15,6 +15,7 @@ import logging
 from typing import Any, Dict, Optional, Tuple
 from appwrite.client import Client
 from appwrite.services.teams import Teams
+from appwrite.services.users import Users
 
 import attr
 from synapse.module_api import EventBase, ModuleApi
@@ -45,6 +46,7 @@ class InviteAutoAddAwTeam:
         )
 
         self.teams = Teams(self.client)
+        self.users = Users(self.client)
 
         should_run_on_this_worker = config.worker_to_run_on == self._api.worker_name
 
@@ -122,7 +124,10 @@ class InviteAutoAddAwTeam:
                 result = self.teams.get(room_id)
             except:
                 result = self.teams.create(room_id, room_id)
-            
+
+            user = self.users.get(user_id)
+
+            result = self.teams.create_membership(room_id, user.email, [], 'https://appwrite.dev.synapp-messaging.com')
 
             logger.debug(result)
 
