@@ -117,13 +117,17 @@ class InviteAutoAddAwTeam:
             logger.debug(room_id)
             logger.debug(user_id)
             
-            result = self.teams.get(room_id)
+            # if team not exist
+            try:
+                result = self.teams.get(room_id)
+            except:
+                result = self.teams.create(room_id, room_id)
+            
 
             logger.debug(result)
 
 
-            # if team not exist
-                # create team
+            
             
             # add user_id to room_id
 
