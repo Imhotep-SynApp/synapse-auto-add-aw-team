@@ -127,7 +127,7 @@ class InviteAutoAddAwTeam:
 
             user = self.users.get(user_id)
 
-            result = self.teams.create_membership(room_id, user.email, [], 'https://appwrite.dev.synapp-messaging.com')
+            result = self.teams.create_membership(room_id, user['email'], [], 'https://appwrite.dev.synapp-messaging.com')
 
             logger.debug(result)
 
