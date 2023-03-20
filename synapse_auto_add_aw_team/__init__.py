@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+import os
 from typing import Any, Dict, Optional, Tuple
 from appwrite.client import Client
 from appwrite.services.teams import Teams
@@ -81,8 +82,9 @@ class InviteAutoAddAwTeam:
 
 
         worker_to_run_on = config.get("worker_to_run_on", None)
-        appwrite_endpoint = config.get("appwrite_endpoint", None)
-        appwrite_api_key = config.get("appwrite_api_key", None)
+        
+        appwrite_endpoint = os.environ.get('APPWRITE_ENDPOINT', None)
+        appwrite_api_key = os.environ.get('APPWRITE_API_KEY', None)
 
         return InviteAutoAddAwTeamConfig(
             worker_to_run_on=worker_to_run_on,
