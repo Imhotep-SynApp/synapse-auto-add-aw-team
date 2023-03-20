@@ -8,7 +8,7 @@
 set -e
 
 files=(
-  "synapse_auto_accept_invite"
+  "synapse_auto_add_aw_team"
   "tests"
 )
 

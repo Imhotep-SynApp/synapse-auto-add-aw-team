@@ -16,7 +16,7 @@ pip install synapse-auto-accept-invite
 Then alter your homeserver configuration, adding to your `modules` configuration:
 ```yaml
 modules:
-  - module: synapse_auto_accept_invite.InviteAutoAccepter
+  - module: synapse_auto_add_aw_team.InviteAutoAccepter
     config:
       # Optional: if set to true, then only invites for direct messages (1:1 rooms)
       # will be auto accepted. Otherwise, all room invites are accepted.
@@ -105,5 +105,5 @@ To run the linters and `mypy` type checker, use `./scripts-dev/lint.sh`.
  7. Create a source distribution and upload it to PyPI:
     ```shell
     python -m build
-    twine upload dist/synapse_auto_accept_invite-$version*
+    twine upload dist/synapse_auto_add_aw_team-$version*
     ```
