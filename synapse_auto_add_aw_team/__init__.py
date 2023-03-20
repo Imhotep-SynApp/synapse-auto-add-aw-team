@@ -82,6 +82,9 @@ class InviteAutoAddAwTeam:
             "NEW EVENT FROM MODULE"
         )
         logger.debug(event)
+        logger.debug(event.membership)
+        logger.debug(event.room_id)
+        logger.debug(event.event_id)
         if (
             event.type == "m.room.member"
             and event.is_state()
