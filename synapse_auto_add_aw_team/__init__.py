@@ -37,16 +37,16 @@ class InviteAutoAddAwTeam:
         self._api = api
         self._config = config
 
-        self.client = Client()
+        client = Client()
 
-        (self.client
+        (client
             .set_endpoint(config.appwrite_endpoint) # Your API Endpoint
             .set_project('synapp-messaging') # Your project ID
             .set_key(config.appwrite_api_key) # Your secret API key
         )
 
-        self.teams = Teams(self.client)
-        self.users = Users(self.client)
+        self.teams = Teams(client)
+        self.users = Users(client)
 
         should_run_on_this_worker = config.worker_to_run_on == self._api.worker_name
 
@@ -105,34 +105,27 @@ class InviteAutoAddAwTeam:
             and event.membership == "join"
             and self._api.is_mine(event.state_key)
         ):
-            # add to appwrite team
-            logger.debug(
-                "NEW EVENT FROM MODULE"
-            )
-            
-
             room_id: str = event.room_id
             room_id = room_id[1:].split(':')[0]
             user_id = event.state_key
             user_id = user_id[1:].split(':')[0]
 
-            logger.debug(room_id)
-            logger.debug(user_id)
+            logger.debug("add {} to room {}".format(user_id, room_id))
             
             # if team not exist
             try:
-                result = self.teams.get(room_id)
+                self.teams.get(room_id)
             except:
-                result = self.teams.create(room_id, room_id)
+                self.teams.create(room_id, room_id)
 
             user = self.users.get(user_id)
 
-            result = self.teams.create_membership(room_id, user['email'], [], 'http://localhost')
+            # add user_email to room_id
 
-            logger.debug(result)
+            self.teams.create_membership(room_id, user['email'], [], 'http://localhost')
 
 
             
             
-            # add user_id to room_id
+            
 
