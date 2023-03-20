@@ -78,20 +78,22 @@ class InviteAutoAddAwTeam:
             event: The incoming event.
         """
         # Check if the event is an invite for a local user.
-        logger.debug(
-            "NEW EVENT FROM MODULE"
-        )
-        logger.debug(event)
-        logger.debug(event.membership)
-        logger.debug(event.room_id)
-        logger.debug(event.event_id)
+        
         if (
             event.type == "m.room.member"
             and event.is_state()
-            and event.membership == "invite"
+            and event.membership == "join"
             and self._api.is_mine(event.state_key)
         ):
             # add to appwrite team
             logger.debug(
-                "NEW EVENT FROM MODULE", event.id
+                "NEW EVENT FROM MODULE"
             )
+            
+
+            room_id = event.room_id
+            user_id = event.state_key
+
+            logger.debug(room_id)
+            logger.debug(user_id)
+
