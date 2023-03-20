@@ -13,6 +13,8 @@
 # limitations under the License.
 import logging
 from typing import Any, Dict, Optional, Tuple
+from appwrite.client import Client
+from appwrite.services.teams import Teams
 
 import attr
 from synapse.module_api import EventBase, ModuleApi
@@ -24,6 +26,8 @@ ACCOUNT_DATA_DIRECT_MESSAGE_LIST = "m.direct"
 @attr.s(auto_attribs=True, frozen=True)
 class InviteAutoAddAwTeamConfig:
     worker_to_run_on: Optional[str] = None
+    appwrite_endpoint: str = None
+    appwrite_api_key: str = None
 
 
 class InviteAutoAddAwTeam:
@@ -31,6 +35,16 @@ class InviteAutoAddAwTeam:
         # Keep a reference to the Module API.
         self._api = api
         self._config = config
+
+        self.client = Client()
+
+        (self.client
+            .set_endpoint(config.appwrite_endpoint) # Your API Endpoint
+            .set_project('synapp-messaging') # Your project ID
+            .set_key(config.appwrite_api_key) # Your secret API key
+        )
+
+        self.teams = Teams(self.client)
 
         should_run_on_this_worker = config.worker_to_run_on == self._api.worker_name
 
@@ -65,9 +79,13 @@ class InviteAutoAddAwTeam:
 
 
         worker_to_run_on = config.get("worker_to_run_on", None)
+        appwrite_endpoint = config.get("appwrite_endpoint", None)
+        appwrite_api_key = config.get("appwrite_api_key", None)
 
         return InviteAutoAddAwTeamConfig(
             worker_to_run_on=worker_to_run_on,
+            appwrite_endpoint=appwrite_endpoint,
+            appwrite_api_key=appwrite_api_key,
         )
 
     async def on_new_event(self, event: EventBase, *args: Any) -> None:
@@ -91,9 +109,21 @@ class InviteAutoAddAwTeam:
             )
             
 
-            room_id = event.room_id
+            room_id: str = event.room_id
+            room_id = room_id[1:].split(':')[0]
             user_id = event.state_key
+            user_id = user_id[1:].split(':')[0]
 
             logger.debug(room_id)
             logger.debug(user_id)
+            
+            result = self.teams.get(room_id)
+
+            logger.debug(result)
+
+
+            # if team not exist
+                # create team
+            
+            # add user_id to room_id
 
