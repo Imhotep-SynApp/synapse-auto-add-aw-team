@@ -78,6 +78,9 @@ class InviteAutoAddAwTeam:
             event: The incoming event.
         """
         # Check if the event is an invite for a local user.
+        logger.debug(
+            "NEW EVENT FROM MODULE %r", event.id
+        )
         if (
             event.type == "m.room.member"
             and event.is_state()
