@@ -79,8 +79,9 @@ class InviteAutoAddAwTeam:
         """
         # Check if the event is an invite for a local user.
         logger.debug(
-            "NEW EVENT FROM MODULE %r", event.id
+            "NEW EVENT FROM MODULE"
         )
+        logger.debug(event)
         if (
             event.type == "m.room.member"
             and event.is_state()
@@ -89,5 +90,5 @@ class InviteAutoAddAwTeam:
         ):
             # add to appwrite team
             logger.debug(
-                "NEW EVENT FROM MODULE %r", event.id
+                "NEW EVENT FROM MODULE", event.id
             )
