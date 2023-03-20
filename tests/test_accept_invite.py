@@ -17,7 +17,7 @@ from unittest.mock import Mock
 import aiounittest
 from frozendict import frozendict
 
-from synapse_auto_accept_invite import InviteAutoAccepter
+from synapse_auto_add_aw_team import InviteAutoAccepter
 from tests import MockEvent, create_module, make_awaitable
 
 

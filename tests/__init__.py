@@ -17,7 +17,7 @@ from unittest.mock import Mock
 import attr
 from synapse.module_api import ModuleApi
 
-from synapse_auto_accept_invite import InviteAutoAccepter
+from synapse_auto_add_aw_team import InviteAutoAccepter
 
 
 @attr.s(auto_attribs=True)
