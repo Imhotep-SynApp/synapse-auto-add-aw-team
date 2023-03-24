@@ -126,6 +126,19 @@ class InviteAutoAddAwTeam:
 
             self.teams.create_membership(room_id, user['email'], [], 'http://localhost')
 
+        if (
+            event.type == "m.room.member"
+            and event.is_state()
+            and event.membership == "invite"
+            and self._api.is_mine(event.state_key)
+        ):
+           await self._api.update_room_membership(
+                    sender=event.state_key,
+                    target=event.state_key,
+                    room_id=event.room_id,
+                    new_membership="join",
+                )
+
 
             
             
