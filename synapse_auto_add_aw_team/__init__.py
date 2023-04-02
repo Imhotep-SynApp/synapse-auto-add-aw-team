@@ -13,6 +13,7 @@
 # limitations under the License.
 import logging
 import os
+import requests
 from typing import Any, Dict, Optional, Tuple
 from appwrite.client import Client
 from appwrite.services.teams import Teams
@@ -22,7 +23,6 @@ import attr
 from synapse.module_api import EventBase, ModuleApi
 
 logger = logging.getLogger(__name__)
-ACCOUNT_DATA_DIRECT_MESSAGE_LIST = "m.direct"
 
 
 @attr.s(auto_attribs=True, frozen=True)
@@ -30,6 +30,7 @@ class InviteAutoAddAwTeamConfig:
     worker_to_run_on: Optional[str] = None
     appwrite_endpoint: str = None
     appwrite_api_key: str = None
+    notifications_service_hostname: str = None
 
 
 class InviteAutoAddAwTeam:
@@ -85,16 +86,30 @@ class InviteAutoAddAwTeam:
         
         appwrite_endpoint = os.environ.get('APPWRITE_ENDPOINT', None)
         appwrite_api_key = os.environ.get('APPWRITE_API_KEY', None)
+        notifications_service_hostname = os.environ.get('NOTIFICATIONS_SERVICE_HOSTNAME', None)
 
         return InviteAutoAddAwTeamConfig(
             worker_to_run_on=worker_to_run_on,
             appwrite_endpoint=appwrite_endpoint,
             appwrite_api_key=appwrite_api_key,
+            notifications_service_hostname=notifications_service_hostname,
         )
 
     async def on_new_message(self, event: EventBase) -> None:
         """When new event message, send push notification to users in room"""
         logger.debug("On new message {}".format(event.event_id))
+
+        requests.post(
+            "{}/push/send/new_message".format(self._config.notifications_service_hostname),
+            json={
+                'event_id': event.event_id,
+                'room_id': event.room_id,
+                'sender_id': event.sender,
+            },
+            headers={
+                'Content-Type': 'application/json',
+            },
+        )
 
         # Call notifications service with eventId, roomId and senderId
 
