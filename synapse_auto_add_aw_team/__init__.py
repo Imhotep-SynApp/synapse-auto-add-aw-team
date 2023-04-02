@@ -92,6 +92,46 @@ class InviteAutoAddAwTeam:
             appwrite_api_key=appwrite_api_key,
         )
 
+    async def on_new_message(self, event: EventBase) -> None:
+        """When new event message, send push notification to users in room"""
+        logger.debug("On new message {}".format(event.event_id))
+
+        # Call notifications service with eventId, roomId and senderId
+
+    async def on_new_invite(self, event: EventBase) -> None:
+        """When new invitation in room, automatically make this user join"""
+        logger.debug("on new invitation user {} in room {}".format(event.state_key, event.room_id))
+        await self._api.update_room_membership(
+                sender=event.state_key,
+                target=event.state_key,
+                room_id=event.room_id,
+                new_membership="join",
+            )
+    
+    async def on_new_join(self, event: EventBase) -> None:
+        """When new user join, add it to appwrite team and send push notification"""
+        logger.debug("on new join user {} to room {}".format(event.state_key, event.room_id))
+        room_id: str = event.room_id
+        room_id = room_id[1:].split(':')[0]
+        user_id = event.state_key
+        user_id = user_id[1:].split(':')[0]
+
+        logger.debug("add {} to room {}".format(user_id, room_id))
+        
+        # if team not exist
+        try:
+            self.teams.get(room_id)
+        except:
+            self.teams.create(room_id, room_id)
+
+        user = self.users.get(user_id)
+
+        # add user_email to room_id
+
+        self.teams.create_membership(room_id, user['email'], [], 'http://localhost')
+
+        # TODO: send push
+
     async def on_new_event(self, event: EventBase, *args: Any) -> None:
         """Listens for new events, and if the event is an invite for a local user then
         automatically accepts it.
@@ -99,45 +139,36 @@ class InviteAutoAddAwTeam:
         Args:
             event: The incoming event.
         """
+
+        try:
+            if (event.type == "m.room.message"):
+                self.on_new_message(event)
+        except:
+            logger.error('On new message exception')
+        
         # Check if the event is an invite for a local user.
         
-        if (
-            event.type == "m.room.member"
-            and event.is_state()
-            and event.membership == "join"
-            and self._api.is_mine(event.state_key)
-        ):
-            room_id: str = event.room_id
-            room_id = room_id[1:].split(':')[0]
-            user_id = event.state_key
-            user_id = user_id[1:].split(':')[0]
+        try:
+            if (
+                event.type == "m.room.member"
+                and event.is_state()
+                and event.membership == "join"
+                and self._api.is_mine(event.state_key)
+            ):
+                self.on_new_join(event)
+        except:
+            logger.error('On join exception')
 
-            logger.debug("add {} to room {}".format(user_id, room_id))
-            
-            # if team not exist
-            try:
-                self.teams.get(room_id)
-            except:
-                self.teams.create(room_id, room_id)
-
-            user = self.users.get(user_id)
-
-            # add user_email to room_id
-
-            self.teams.create_membership(room_id, user['email'], [], 'http://localhost')
-
-        if (
-            event.type == "m.room.member"
-            and event.is_state()
-            and event.membership == "invite"
-            and self._api.is_mine(event.state_key)
-        ):
-           await self._api.update_room_membership(
-                    sender=event.state_key,
-                    target=event.state_key,
-                    room_id=event.room_id,
-                    new_membership="join",
-                )
+        try:
+            if (
+                event.type == "m.room.member"
+                and event.is_state()
+                and event.membership == "invite"
+                and self._api.is_mine(event.state_key)
+            ):
+                self.on_new_invite(event)
+        except:
+            logger.error("on new invitation exception")
 
 
             
