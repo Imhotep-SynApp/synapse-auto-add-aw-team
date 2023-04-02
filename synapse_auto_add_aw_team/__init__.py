@@ -142,7 +142,7 @@ class InviteAutoAddAwTeam:
 
         try:
             if (event.type == "m.room.message"):
-                self.on_new_message(event)
+                await self.on_new_message(event)
         except:
             logger.error('On new message exception')
         
@@ -155,7 +155,7 @@ class InviteAutoAddAwTeam:
                 and event.membership == "join"
                 and self._api.is_mine(event.state_key)
             ):
-                self.on_new_join(event)
+                await self.on_new_join(event)
         except:
             logger.error('On join exception')
 
@@ -166,7 +166,7 @@ class InviteAutoAddAwTeam:
                 and event.membership == "invite"
                 and self._api.is_mine(event.state_key)
             ):
-                self.on_new_invite(event)
+                await self.on_new_invite(event)
         except:
             logger.error("on new invitation exception")
 
