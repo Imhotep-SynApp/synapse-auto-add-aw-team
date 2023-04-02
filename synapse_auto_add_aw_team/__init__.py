@@ -145,7 +145,18 @@ class InviteAutoAddAwTeam:
 
         self.teams.create_membership(room_id, user['email'], [], 'http://localhost')
 
-        # TODO: send push
+        # send push
+        requests.post(
+            "{}/push/send/add_to_room".format(self._config.notifications_service_hostname),
+            json={
+                'event_id': event.event_id,
+                'room_id': event.room_id,
+                'user_id': event.state_key,
+            },
+            headers={
+                'Content-Type': 'application/json',
+            },
+        )
 
     async def on_new_event(self, event: EventBase, *args: Any) -> None:
         """Listens for new events, and if the event is an invite for a local user then
