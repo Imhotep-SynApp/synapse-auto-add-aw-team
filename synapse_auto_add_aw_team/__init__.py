@@ -166,11 +166,11 @@ class InviteAutoAddAwTeam:
             event: The incoming event.
         """
 
-        #try:
-        if (event.type == "m.room.message"):
-            await self.on_new_message(event)
-        #except:
-        #    logger.error('On new message exception')
+        try:
+            if (event.type == "m.room.message"):
+                await self.on_new_message(event)
+        except:
+            logger.error('On new message exception')
         
         # Check if the event is an invite for a local user.
         
