@@ -14,6 +14,7 @@
 import logging
 import os
 import requests
+import hashlib
 from typing import Any, Dict, Optional, Tuple
 from appwrite.client import Client
 from appwrite.services.teams import Teams
@@ -127,7 +128,7 @@ class InviteAutoAddAwTeam:
         """When new user join, add it to appwrite team and send push notification"""
         logger.debug("on new join user {} to room {}".format(event.state_key, event.room_id))
         room_id: str = event.room_id
-        room_id = room_id[1:].split(':')[0]
+        team_id = hashlib.sha256(room_id.encode("utf-8")).hexdigest()[:32]
         user_id = event.state_key
         user_id = user_id[1:].split(':')[0]
 
@@ -135,15 +136,15 @@ class InviteAutoAddAwTeam:
         
         # if team not exist
         try:
-            self.teams.get(room_id)
+            self.teams.get(team_id)
         except:
-            self.teams.create(room_id, room_id)
+            self.teams.create(team_id, team_id)
 
         user = self.users.get(user_id)
 
-        # add user_email to room_id
+        # add user_email to team_id
 
-        self.teams.create_membership(room_id, user['email'], [], 'http://localhost')
+        self.teams.create_membership(team_id, user['email'], [], 'http://localhost')
 
         # send push
         requests.post(
