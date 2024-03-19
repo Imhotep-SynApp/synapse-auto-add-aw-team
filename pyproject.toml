@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel", "appwrite==1.2.0", "requests"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.isort]
@@ -7,13 +7,4 @@ profile = "black"
 known_first_party = [
     "synapse_auto_add_aw_team",
     "tests"
-]
-
-[project]
-name = "synapse_auto_add_aw_team"
-version = "1.0"
-
-dependencies = [
-    "appwrite==1.2.0",
-    "requests"
 ]
